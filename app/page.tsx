@@ -1,12 +1,12 @@
-import Link from 'next/link'
-import React from 'react'
+import HeroSection from "@/components/hero-section/heroSection";
+import React from "react";
 
 function page() {
   return (
-    <Link href={'/appointment/reminder/demo-class'} className='bg-red-500 p-2 grid grid-cols-1'>
-      Hello World!
-    </Link>
-  )
+    <div className="overflow-x-hidden">
+      <HeroSection />
+    </div>
+  );
 }
 
-export default page
+export default page;

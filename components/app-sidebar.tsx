@@ -2,12 +2,10 @@
 
 import * as React from "react"
 import {
-  BookOpen,
-  Bot,
-  Frame,
+  Edit2Icon,
+  EqualApproximatelyIcon,
   LifeBuoy,
-  Map,
-  PieChart,
+  MessageCircleQuestion,
   Send,
   Settings2,
   SquareTerminal,
@@ -28,74 +26,30 @@ import {
 } from "@/components/ui/sidebar"
 import Link from "next/link"
 import Image from "next/image"
+import { LOGO_IMG } from "@/constants/images"
 
 const data = {
   user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
+    name: "Dev",
+    email: "devstidax@gmail.com",
+    avatar: {image:LOGO_IMG},
   },
   navMain: [
     {
-      title: "Playground",
+      title: "Take Appointment",
       url: "#",
       icon: SquareTerminal,
       isActive: true,
       items: [
         {
-          title: "History",
-          url: "#",
+          title: "Demo Class",
+          url: "/appointment/reminder/demo-class",
         },
         {
-          title: "Starred",
-          url: "#",
+          title: "Normal Class",
+          url: "/appointment/reminder/normal-class",
         },
-        {
-          title: "Settings",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Models",
-      url: "#",
-      icon: Bot,
-      items: [
-        {
-          title: "Genesis",
-          url: "#",
-        },
-        {
-          title: "Explorer",
-          url: "#",
-        },
-        {
-          title: "Quantum",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Documentation",
-      url: "#",
-      icon: BookOpen,
-      items: [
-        {
-          title: "Introduction",
-          url: "#",
-        },
-        {
-          title: "Get Started",
-          url: "#",
-        },
-        {
-          title: "Tutorials",
-          url: "#",
-        },
-        {
-          title: "Changelog",
-          url: "#",
-        },
+       
       ],
     },
     {
@@ -136,19 +90,19 @@ const data = {
   ],
   projects: [
     {
-      name: "Design Engineering",
+      name: "Upcoming Appointments",
       url: "#",
-      icon: Frame,
+      icon: EqualApproximatelyIcon,
     },
     {
-      name: "Sales & Marketing",
+      name: "Bulk Appointments",
       url: "#",
-      icon: PieChart,
+      icon: MessageCircleQuestion,
     },
     {
-      name: "Travel",
+      name: "Modify Appointments",
       url: "#",
-      icon: Map,
+      icon: Edit2Icon,
     },
   ],
 }
@@ -161,7 +115,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
               <Link href="/">
-               <Image src={'/assests/images/logo.svg'} height={100} width={100} alt="robo-class-logo"/>
+               <Image src={'/assests/images/logo.svg'} height={100} width={150} alt="robo-class-logo"/>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>

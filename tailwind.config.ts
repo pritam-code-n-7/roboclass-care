@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 import type { Config } from "tailwindcss";
 
 const config: Config = {
@@ -65,7 +66,12 @@ const config: Config = {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',
   			sm: 'calc(var(--radius) - 4px)'
-  		}
+  		},
+		  backgroundImage: {
+			"custom-gradient":
+			  "linear-gradient(100deg, rgb(65, 177, 199) 26%, rgb(144, 178, 51) 100%)",
+			
+		  },
   	}
   },
   plugins: [require("tailwindcss-animate")],
