@@ -55,7 +55,7 @@ export function DatePickerForm() {
           name="dob"
           render={({ field }) => (
             <FormItem className="flex flex-col">
-              <FormLabel>Date of birth</FormLabel>
+              <FormLabel>Book an Appointment</FormLabel>
               <Popover>
                 <PopoverTrigger asChild>
                   <FormControl>
@@ -88,13 +88,13 @@ export function DatePickerForm() {
                 </PopoverContent>
               </Popover>
               <FormDescription>
-                Your date of birth is used to calculate your age.
+                Book an appointment for demo class
               </FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
-        <Button type="submit">Submit</Button>
+        <Button type="submit">Book</Button>
       </form>
     </Form>
   )
