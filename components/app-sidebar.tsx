@@ -4,6 +4,7 @@ import * as React from "react"
 import {
   Edit2Icon,
   EqualApproximatelyIcon,
+  LayoutDashboard,
   LifeBuoy,
   MessageCircleQuestion,
   Send,
@@ -48,6 +49,27 @@ const data = {
         {
           title: "Normal Class",
           url: "/appointment/reminder/normal-class",
+        },
+       
+      ],
+    },
+    {
+      title: "Admnin Dashboard",
+      url: "#",
+      icon: LayoutDashboard,
+      isActive: false,
+      items: [
+        {
+          title: "Calender View",
+          url: "#",
+        },
+        {
+          title: "Modify Appointments",
+          url: "#",
+        },
+        {
+          title: "Track Appointments",
+          url: "#",
         },
        
       ],
@@ -109,8 +131,8 @@ const data = {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
-    <Sidebar variant="inset" {...props}>
-      <SidebarHeader>
+    <Sidebar variant="inset" {...props} >
+      <SidebarHeader  className="bg-neutral-200 rounded">
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
@@ -121,12 +143,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
-      <SidebarContent>
+      <SidebarContent className="bg-neutral-300 rounded">
         <NavMain items={data.navMain} />
         <NavProjects projects={data.projects} />
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
-      <SidebarFooter>
+      <SidebarFooter className="bg-neutral-400 rounded">
         <NavUser user={data.user} />
       </SidebarFooter>
     </Sidebar>
