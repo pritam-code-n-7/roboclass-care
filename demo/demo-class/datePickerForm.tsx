@@ -30,7 +30,7 @@ import { Input } from "@/components/ui/input";
 // import PhoneInput from "react-phone-input-2";
 
 const FormSchema = z.object({
-  dob: z.date({
+  date: z.date({
     required_error: "A date of birth is required.",
   }),
   name: z
@@ -149,7 +149,7 @@ export function DatePickerForm() {
         />
         <FormField
           control={form.control}
-          name="dob"
+          name="date"
           render={({ field }) => (
             <FormItem className="flex flex-col">
               <FormLabel className="font-semibold">
