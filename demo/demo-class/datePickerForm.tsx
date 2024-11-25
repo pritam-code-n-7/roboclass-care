@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/popover";
 import { toast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
-//import { TimePickerDemo } from "./time-picker-demo";
+
 // import PhoneInput from "react-phone-input-2";
 
 const FormSchema = z.object({
@@ -56,10 +56,24 @@ export function DatePickerForm() {
       name: "",
       contact: "+971",
       course: "",
+      date: new Date(),
+      time: new Date().toLocaleTimeString().substring(11, 16),
     },
   });
 
-  function onSubmit(data: z.infer<typeof FormSchema>) {
+  async function onSubmit(data: z.infer<typeof FormSchema>) {
+    try {
+      const response = await fetch("/api/scheduler", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      console.log(JSON.stringify(response));
+    } catch (error) {
+      console.error("Error booking appointment", error);
+    }
+
     toast({
       title: "You submitted the following values:",
       description: (
@@ -74,7 +88,7 @@ export function DatePickerForm() {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="flex flex-col gap-4  "
+        className="flex flex-col gap-4"
       >
         <FormField
           control={form.control}
@@ -179,9 +193,7 @@ export function DatePickerForm() {
                     mode="single"
                     selected={field.value}
                     onSelect={field.onChange}
-                    // disabled={(date) =>
-                    //   date > new Date() || date < new Date("1900-01-01")
-                    // }
+                    disabled={(date) => date < new Date()}
                     initialFocus
                   />
                   <div className="p-10"></div>
@@ -194,13 +206,6 @@ export function DatePickerForm() {
             </FormItem>
           )}
         />
-
-        {/* <TimePickerDemo
-          date={undefined}
-          setDate={function (date: Date | undefined): void {
-            throw new Error("Function not implemented.");
-          }}
-        /> */}
 
         <FormField
           control={form.control}

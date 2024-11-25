@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
+import { dbConnect } from "@/lib/mongo";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -20,11 +21,16 @@ export const metadata: Metadata = {
   description: "STEM Accredited robotics and coding courses",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  
+//Established database connection at first
+const conn = await dbConnect();
+console.log(conn);
+
   return (
     <html lang="en">
       <body
