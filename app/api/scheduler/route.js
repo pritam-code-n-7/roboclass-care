@@ -7,7 +7,7 @@ import cron from "node-cron";
 import axios from "axios";
 
 export const POST = async (request) => {
-  const { date, name, contact, course, time } = request.json();
+  const { date, name, contact, course, time } = await request.json();
 
   console.log(date, name, contact, course, time);
 
@@ -24,78 +24,57 @@ export const POST = async (request) => {
   };
 
   try {
-    const res = await createAppointments(newAppointment);
-    await scheduleReminders(res);
+    await createAppointments(newAppointment);
+    const res = await scheduleReminders(newAppointment);
+
+    console.log(res);
   } catch (error) {
     return new NextResponse(error.message, {
       status: 500,
     });
   }
 
-  const scheduleReminders = async (appointment) => {
+  //Helper: scheduler
+  async function scheduleReminders(appointment) {
     const { date, name, contact } = appointment;
 
-    //calculate reminder times
-    const date24HoursBefore = new Date(date);
-    date24HoursBefore.setHours(date24HoursBefore.getHours() - 24);
-
     const date1HourBefore = new Date(date);
-    date24HoursBefore.setHours(date1HourBefore.getHours() - 1);
+    date1HourBefore.setHours(date1HourBefore.getHours() - 1);
 
-    // Schedule 24hours reminder
-    cron.schedule(getCronExpression(date24HoursBefore), () => {
-      sendReminder(name, contact, "24 hours").catch((e) =>
-        console.error("send reminder error" + e)
+    // Schedule 1-hour reminder
+    cron.schedule(getCronExpression(date1HourBefore), async () => {
+      await sendReminder( name, contact).catch((e) =>
+        console.error("send reminder error", e)
       );
     });
-
-    // Schedule 1hour reminder
-    cron.schedule(getCronExpression(date1HourBefore), () => {
-      sendReminder(name, contact, "1 hour").catch((e) =>
-        console.error("send reminder error" + e)
-      );
-    });
-  };
+  }
 
   //Helper: send whatsapp reminder
-  const sendReminder = async (time, name, contact) => {
+  const sendReminder = async ( name, contact) => {
     const { AISENSY_API_KEY, AISENSY_BASE_URL } = process.env;
 
-    const messages = [
-      {
-        to: contact,
-        body: `Hi ${name}, this is a reminder for your appointment scheduled in ${time}`,
-      },
-    ];
+    const payload = {
+      apiKey: AISENSY_API_KEY,
+      campaignName: "Trial_Class_Demo_1_hour",
+      destination: contact,
+      userName: name,
+    };
 
-    for (const message of messages) {
+
       try {
-        await axios.post(
-          `${AISENSY_BASE_URL}v1/message`,
-          { to: message.to, body: message.body },
-          { headers: { Authorization: `Bearer ${AISENSY_API_KEY}` } }
+        const res = await axios.post(
+          `${AISENSY_BASE_URL}`, payload
+          // { headers: { Authorization: `Bearer ${AISENSY_API_KEY}` } }
         );
 
-        console.log(`reminder sent to ${message.to}`);
+        console.log('reminder sent successfully'+res.data);
       } catch (error) {
-        console.error(`Failed to send reminder to ${message.to}:`, error);
+        console.error('Failed to send reminder', error);
       }
-    }
+    
   };
 
-  // Helper: Convert data to cron expression
-  // const getCronExpression = (date) => {
-  //   const [minute, hour, day, month, dayOfWeek] = [
-  //     date.getMinutes(),
-  //     date.getHours(),
-  //     date.getDate(),
-  //     date.getMonth() + 1,
-  //     "*",
-  //   ];
-
-  //   return `${minute} ${hour} ${day} ${month} ${dayOfWeek}`;
-  // };
-
+  //Helper: cron expression
   function getCronExpression(date) {
     const minute = date.getMinutes();
     const hour = date.getHours();

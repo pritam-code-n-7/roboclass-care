@@ -54,9 +54,9 @@ export function DatePickerForm() {
     resolver: zodResolver(FormSchema),
     defaultValues: {
       name: "",
-      contact: "+971",
+      contact: "+91 ",
       course: "",
-      date: new Date(),
+      date: new Date() || null,
       time: new Date().toLocaleTimeString().substring(11, 16),
     },
   });
@@ -69,7 +69,6 @@ export function DatePickerForm() {
         body: JSON.stringify(data),
       });
 
-      console.log(JSON.stringify(response));
     } catch (error) {
       console.error("Error booking appointment", error);
     }

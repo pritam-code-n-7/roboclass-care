@@ -18,6 +18,10 @@ const appointmentSchema = new Schema(
       required: true,
       type: String,
     },
+    time:{
+      required: true,
+      type: String,
+    }
   },
   {
     timestamps: true,
