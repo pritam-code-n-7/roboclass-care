@@ -6,11 +6,11 @@ const appointmentSchema = new Schema(
       required: true,
       type: Date,
     },
-    name: {
+    userName: {
       required: true,
       type: String,
     },
-    contact: {
+    destination: {
       required: true,
       type: String,
     },

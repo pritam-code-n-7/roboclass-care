@@ -26,19 +26,31 @@ import {
 } from "@/components/ui/popover";
 import { toast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 
 // import PhoneInput from "react-phone-input-2";
+
+const items = [
+  {
+    id: "24hours",
+    label: "24 Hours",
+  },
+  {
+    id: "1hour",
+    label: "1 Hour",
+  },
+] as const
 
 const FormSchema = z.object({
   date: z.date({
     required_error: "A date of birth is required.",
   }),
-  name: z
+  userName: z
     .string({
       required_error: "Student/Parent name is required.",
     })
     .min(2, { message: "name must contain 2 character." }),
-  contact: z.string({
+  destination: z.string({
     required_error: "Student's/Parent's mobile number is required.",
   }),
   course: z.string({
@@ -47,17 +59,23 @@ const FormSchema = z.object({
   time: z.string({
     required_error: "Time slot is required.",
   }),
+  items: z.array(z.string()).refine((value) => value.some((item) => item), {
+    message: "You have to select at least one item.",
+  }),
 });
+
+
 
 export function DatePickerForm() {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      name: "",
-      contact: "+91 ",
+      userName: "",
+      destination: "+971",
       course: "",
       date: new Date() || null,
       time: new Date().toLocaleTimeString().substring(11, 16),
+      items: ["1hour"],
     },
   });
 
@@ -68,7 +86,6 @@ export function DatePickerForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
-
     } catch (error) {
       console.error("Error booking appointment", error);
     }
@@ -83,6 +100,8 @@ export function DatePickerForm() {
     });
   }
 
+
+
   return (
     <Form {...form}>
       <form
@@ -91,7 +110,7 @@ export function DatePickerForm() {
       >
         <FormField
           control={form.control}
-          name="name"
+          name="userName"
           render={({ field }) => (
             <FormItem>
               <FormLabel className="font-semibold">Name</FormLabel>
@@ -126,7 +145,7 @@ export function DatePickerForm() {
         /> */}
         <FormField
           control={form.control}
-          name="contact"
+          name="destination"
           render={({ field }) => (
             <FormItem>
               <FormLabel className="font-semibold">Contact Number</FormLabel>
@@ -221,6 +240,56 @@ export function DatePickerForm() {
                   className="bg-white"
                 />
               </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="items"
+          render={() => (
+            <FormItem>
+              <div className="mb-4">
+                <FormLabel className="text-base">When to send the Reminder</FormLabel>
+                <FormDescription>
+                  Select the time which you want!
+                </FormDescription>
+              </div>
+              {items.map((item) => (
+                <FormField
+                  key={item.id}
+                  control={form.control}
+                  name="items"
+                  render={({ field }) => {
+                    return (
+                      <FormItem
+                        key={item.id}
+                        className="flex flex-row items-start space-x-3 space-y-0"
+                      >
+                        <FormControl>
+                          <Checkbox
+                         
+                            checked={field.value?.includes(item.id)}
+                            onCheckedChange={(checked) => {
+                              return checked
+                                ? field.onChange([...field.value, item.id])
+                                : field.onChange(
+                                    field.value?.filter(
+                                      (value) => value !== item.id
+                                    )
+                                  );
+                            }}
+                          />
+                        </FormControl>
+                        <FormLabel className="font-normal">
+                          {item.label}
+                        </FormLabel>
+                      </FormItem>
+                    );
+                  }}
+                />
+              ))}
               <FormMessage />
             </FormItem>
           )}
