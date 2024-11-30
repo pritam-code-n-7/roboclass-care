@@ -109,6 +109,23 @@ body {
 }
 
 
+.phone-input {
+  width: 400px; /* Default width */
+  height: 40px;
+  border: 1px solid #cbd5e1; /* Slate-300 border */
+  background-color: white; /* White background */
+  border-radius: 0.5rem; /* Rounded corners */
+  outline: none; /* Remove default outline */
+  transition: box-shadow 0.2s, ring-color 0.2s; /* Smooth focus transitions */
+}
+
+@media (min-width: 1024px) {
+  .phone-input {
+    width: 600px;
+  }
+}
+
+
 @layer base {
   * {
     @apply border-border;

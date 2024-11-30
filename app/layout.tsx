@@ -28,8 +28,10 @@ export default async function RootLayout({
 }>) {
   
 //Established database connection at first
-const conn = await dbConnect();
-console.log(conn);
+// const conn = await dbConnect();
+// console.log(conn);
+
+await dbConnect();
 
   return (
     <html lang="en">

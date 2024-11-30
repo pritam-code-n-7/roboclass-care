@@ -8,9 +8,10 @@ import cron from "node-cron";
 import axios from "axios";
 
 export const POST = async (request) => {
-  const { date, userName, destination, course, time, items } = await request.json();
+  const { date, userName, destination, course, time, items } =
+    await request.json();
 
-  console.log(date, userName, destination, course, time);
+  console.log(date, userName, destination, course, time, items);
 
   //Create a db connection
   await dbConnect();
@@ -39,11 +40,13 @@ export const POST = async (request) => {
     const { date, userName, destination } = appointment;
 
     // Calculate the reminder time (1 hour before the appointment time)
-    const dateOneHourBefore = new Date(date);
+    //const dateOneHourBefore = new Date(date);
+    const dateOneHourBefore = new Date(
+      new Date(date).toLocaleString("en-us", { timeZone: "Asia/Dubai" })
+    );
     dateOneHourBefore.setHours(dateOneHourBefore.getHours() - 1);
 
     console.log(dateOneHourBefore);
-    
 
     // Extract components for cron expression
     const minute = dateOneHourBefore.getMinutes();
@@ -71,17 +74,27 @@ export const POST = async (request) => {
   }
 
   //Helper: send whatsapp reminder
-  const sendReminder = async (userName, destination) => {
+  const sendReminder = async (userName, destination, items) => {
     const { AISENSY_API_KEY, AISENSY_BASE_URL } = process.env;
 
     console.log("base url" + AISENSY_BASE_URL);
     console.log("api key" + AISENSY_API_KEY);
 
+  //find the selected item from an array
+    const selectedItem = items.find(
+      (item) => item.id === "1hour" || item.id === "24hours"
+    );
+
     const payload = {
       apiKey: AISENSY_API_KEY,
-      campaignName: "Trial_Class_Demo_1_hour",
-      destination: destination,
-      userName: userName,
+      campaignName:
+        selectedItem?.id === "1hour"
+          ? "Trial_Class_Demo_1_hour"
+          : selectedItem?.id === "24hours"
+          ? "Trial_Class_Demo_24_hours"
+          : "",
+      destination,
+      userName,
     };
 
     console.log("Payload is" + payload);
@@ -98,15 +111,6 @@ export const POST = async (request) => {
       console.error("Failed to send reminder", error);
     }
   };
-
-  //Helper: cron expression
-  // function getCronExpression(date) {
-  //   const minute = date.getMinutes();
-  //   const hour = date.getHours();
-  //   const day = date.getDate();
-  //   const month = date.getMonth() + 1;
-  //   return `${minute} ${hour} ${day} ${month} *`;
-  // }
 
   return new NextResponse("Appointment has been created", {
     status: 201,

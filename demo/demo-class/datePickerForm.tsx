@@ -28,7 +28,7 @@ import { toast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 
-// import PhoneInput from "react-phone-input-2";
+import PhoneInput from "react-phone-input-2";
 
 const items = [
   {
@@ -39,32 +39,24 @@ const items = [
     id: "1hour",
     label: "1 Hour",
   },
-] as const
+] as const;
 
 const FormSchema = z.object({
-  date: z.date({
-    required_error: "A date of birth is required.",
-  }),
-  userName: z
-    .string({
-      required_error: "Student/Parent name is required.",
-    })
-    .min(2, { message: "name must contain 2 character." }),
-  destination: z.string({
-    required_error: "Student's/Parent's mobile number is required.",
-  }),
-  course: z.string({
-    required_error: "Course details is required.",
-  }),
-  time: z.string({
-    required_error: "Time slot is required.",
-  }),
+  date: z.date({required_error: "A date of birth is required.",}),
+
+  userName: z.string().min(2, { message: "name must contain atleast 2 character." }),
+
+  destination: z.string().min(12, { message: "mobile is incorrect." }),
+
+  course: z.string().min(2,{message:"course must contain atleast 2 chracter"}),
+
+  time: z.string({required_error: "Time slot is required.",}),
+
   items: z.array(z.string()).refine((value) => value.some((item) => item), {
     message: "You have to select at least one item.",
   }),
+
 });
-
-
 
 export function DatePickerForm() {
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -100,8 +92,6 @@ export function DatePickerForm() {
     });
   }
 
-
-
   return (
     <Form {...form}>
       <form
@@ -118,6 +108,7 @@ export function DatePickerForm() {
                 <Input
                   placeholder="Student/Parent name"
                   {...field}
+                  required
                   className="bg-white"
                 />
               </FormControl>
@@ -126,24 +117,6 @@ export function DatePickerForm() {
           )}
         />
         {/* <FormField
-          control={form.control}
-          name="contact"
-          render={({ field }) => (
-            <FormItem>
-              <FormControl>
-                <PhoneInput
-                  country={"us"}
-                  placeholder="Parents Contact/Whatsapp number"
-                  {...field}
-                  // className="lg:w-[450px] w-[300px] border-2 bg-white border-slate-300 rounded-lg focus:ring-1 ring-gold focus:shadow-sm"
-                  inputClass="phone-input"
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        /> */}
-        <FormField
           control={form.control}
           name="destination"
           render={({ field }) => (
@@ -155,6 +128,25 @@ export function DatePickerForm() {
                   placeholder="Parent's Mobile/WhatsApp number"
                   {...field}
                   className="bg-white"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        /> */}
+        <FormField
+          control={form.control}
+          name="destination"
+          render={({ field }) => (
+            <FormItem>
+               <FormLabel className="font-semibold">Phone</FormLabel>
+              <FormControl>
+                <PhoneInput
+                  country={"us"}
+                  placeholder="Parents Contact/Whatsapp number"
+                  {...field}               
+                  inputClass="phone-input" 
+                  specialLabel= ""
                 />
               </FormControl>
               <FormMessage />
@@ -172,6 +164,7 @@ export function DatePickerForm() {
                 <Input
                   placeholder="e.g. - AI for kids"
                   {...field}
+                  required
                   className="bg-white"
                 />
               </FormControl>
@@ -213,6 +206,7 @@ export function DatePickerForm() {
                     onSelect={field.onChange}
                     disabled={(date) => date < new Date()}
                     initialFocus
+                    required
                   />
                   <div className="p-10"></div>
                 </PopoverContent>
@@ -237,6 +231,7 @@ export function DatePickerForm() {
                   type="time"
                   placeholder="e.g. - AI for kids"
                   {...field}
+                  required
                   className="bg-white"
                 />
               </FormControl>
@@ -251,7 +246,9 @@ export function DatePickerForm() {
           render={() => (
             <FormItem>
               <div className="mb-4">
-                <FormLabel className="text-base">When to send the Reminder</FormLabel>
+                <FormLabel className="font-bold">
+                  When to send the Reminder
+                </FormLabel>
                 <FormDescription>
                   Select the time which you want!
                 </FormDescription>
@@ -269,7 +266,6 @@ export function DatePickerForm() {
                       >
                         <FormControl>
                           <Checkbox
-                         
                             checked={field.value?.includes(item.id)}
                             onCheckedChange={(checked) => {
                               return checked
