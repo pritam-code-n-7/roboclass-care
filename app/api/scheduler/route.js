@@ -7,16 +7,18 @@ import { NextResponse } from "next/server";
 import cron from "node-cron";
 import axios from "axios";
 
+import moment from "moment-timezone";
+
 export const POST = async (request) => {
   const { date, userName, destination, course, time, items } =
     await request.json();
 
   console.log(date, userName, destination, course, time, items);
 
-  //Create a db connection
+  // Create a db connection
   await dbConnect();
 
-  //Form a db payload
+  // Form a db payload
   const newAppointment = {
     date,
     userName,
@@ -35,24 +37,32 @@ export const POST = async (request) => {
     });
   }
 
-  //Helper: scheduler
+  // Helper: scheduler
   async function scheduleReminders(appointment) {
-    const { date, userName, destination } = appointment;
+    const { time, date, userName, destination } = appointment;
 
-    // Calculate the reminder time (1 hour before the appointment time)
-    //const dateOneHourBefore = new Date(date);
-    const dateOneHourBefore = new Date(
-      new Date(date).toLocaleString("en-us", { timeZone: "Asia/Dubai" })
+    // Combine date and time in Indian timezone
+    const indianDateTime = moment.tz(
+      `${date} ${time}`,
+      "YYYY-MM-DD HH:mm",
+      "Asia/Kolkata"
     );
-    dateOneHourBefore.setHours(dateOneHourBefore.getHours() - 1);
 
-    console.log(dateOneHourBefore);
+    // Convert Indian timezone to Dubai timezone
+    const dubaiDateTime = indianDateTime.clone().tz("Asia/Dubai");
 
-    // Extract components for cron expression
-    const minute = dateOneHourBefore.getMinutes();
-    const hour = dateOneHourBefore.getHours();
-    const day = dateOneHourBefore.getDate();
-    const month = dateOneHourBefore.getMonth() + 1;
+    // Subtract 24 hours from the Dubai time
+    const reminderDateTime = dubaiDateTime.clone().subtract(24, "hours");
+
+    console.log("Indian Time (Appointment):", indianDateTime.format());
+    console.log("Dubai Time (Appointment):", dubaiDateTime.format());
+    console.log("Dubai Time (Reminder):", reminderDateTime.format());
+
+    // Extract components for the cron expression
+    const minute = reminderDateTime.minute();
+    const hour = reminderDateTime.hour();
+    const day = reminderDateTime.date();
+    const month = reminderDateTime.month() + 1; // Months are 0-based
 
     const cronExpression = `${minute} ${hour} ${day} ${month} *`;
 
@@ -74,30 +84,25 @@ export const POST = async (request) => {
   }
 
   //Helper: send whatsapp reminder
-  const sendReminder = async (userName, destination, items) => {
+  const sendReminder = async (userName, destination) => {
     const { AISENSY_API_KEY, AISENSY_BASE_URL } = process.env;
 
     console.log("base url" + AISENSY_BASE_URL);
     console.log("api key" + AISENSY_API_KEY);
 
-  //find the selected item from an array
-    const selectedItem = items.find(
-      (item) => item.id === "1hour" || item.id === "24hours"
-    );
+    //find the selected item from an array
+    // const selectedItem = items?.find(
+    //   (item) => item.id === "1hour" || item.id === "24hours"
+    // );
 
     const payload = {
       apiKey: AISENSY_API_KEY,
-      campaignName:
-        selectedItem?.id === "1hour"
-          ? "Trial_Class_Demo_1_hour"
-          : selectedItem?.id === "24hours"
-          ? "Trial_Class_Demo_24_hours"
-          : "",
+      campaignName: "Trial_Class_Demo_24_hour",
       destination,
       userName,
     };
 
-    console.log("Payload is" + payload);
+    console.log("Payload is" + JSON.stringify(payload, null, 2));
 
     try {
       const res = await axios.post(
@@ -106,7 +111,9 @@ export const POST = async (request) => {
         //  { headers: { Authorization: `Bearer ${AISENSY_API_KEY}` } }
       );
 
-      console.log("reminder sent successfully" + res.data);
+      const currentTime = new Date().toLocaleString();
+
+      console.log(`reminder sent successfully on ${currentTime}` + res.data);
     } catch (error) {
       console.error("Failed to send reminder", error);
     }

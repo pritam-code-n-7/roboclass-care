@@ -2,14 +2,10 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { format } from "date-fns";
-import { CalendarIcon } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
 import {
   Form,
   FormControl,
@@ -19,16 +15,15 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+
 import { toast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
-
 // import PhoneInput from "react-phone-input-2";
+
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { SetStateAction, useState } from "react";
 
 const items = [
   {
@@ -39,42 +34,61 @@ const items = [
     id: "1hour",
     label: "1 Hour",
   },
-] as const;
+];
 
 const FormSchema = z.object({
-  date: z.string({ required_error: "A date is required." }),
+  date: z.array(z.string()).refine((value) => value.some((item) => item), {
+    message: "You have to select at least one date.",
+  }),
 
   userName: z
     .string()
-    .min(2, { message: "name must contain atleast 2 character." }),
+    .min(2, { message: "Name must contain atleast 2 character." }),
 
   destination: z.string().min(12, { message: "mobile is incorrect." }),
 
   course: z
     .string()
-    .min(2, { message: "course must contain atleast 2 chracter" }),
+    .min(2, { message: "Course name must contain atleast 2 character." }),
 
   time: z.string({ required_error: "Time slot is required." }),
 
   items: z.array(z.string()).refine((value) => value.some((item) => item), {
     message: "You have to select at least one item.",
   }),
+  teacher: z
+    .string()
+    .min(2, { message: "Teacher name must contain atleast 2 character." }),
+
+  batch: z
+    .string()
+    .min(2, { message: "Batch name must contain atleast 2 character." }),
 });
 
-export function DatePickerForm() {
-  const form = useForm<z.infer<typeof FormSchema>>({
+export function MultiDatePickerForm() {
+  const form = useForm({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       userName: "",
       destination: "+971",
       course: "",
+      teacher: "",
+      batch: "Prime B21",
       date: undefined,
       time: new Date().toLocaleTimeString().substring(11, 16),
       items: ["1hour"],
     },
   });
 
-  async function onSubmit(data: z.infer<typeof FormSchema>) {
+  const [startDate, setStartDate] = useState();
+  const [endDate, setEndDate] = useState();
+
+  const dateRangeHandler = (value) => {
+    setStartDate(value[0]);
+    setEndDate(value[1]);
+  };
+
+  async function onSubmit(data) {
     try {
       //  const formattedDate = data.date.toISOString();
       await fetch("/api/scheduler", {
@@ -178,53 +192,56 @@ export function DatePickerForm() {
         />
         <FormField
           control={form.control}
-          name="date"
+          name="batch"
           render={({ field }) => (
-            <FormItem className="flex flex-col">
-              <FormLabel className="font-semibold">
-                Book an Appointment
-              </FormLabel>
-              {/* <Popover>
-                <PopoverTrigger asChild>
-                  <FormControl>
-                    <Button
-                      variant={"outline"}
-                      className={cn(
-                        "w-[240px] pl-3 text-left font-normal",
-                        !field.value && "text-muted-foreground"
-                      )}
-                    >
-                      {field.value ? (
-                        format(field.value, "PPP")
-                      ) : (
-                        <span>Pick a date</span>
-                      )}
-                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                    </Button>
-                  </FormControl>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={field.value}
-                    onSelect={field.onChange}
-                    disabled={(date) => date < new Date()}
-                    initialFocus
-                    required
-                  />
-                  <div className="p-10"></div>
-                </PopoverContent>
-              </Popover> */}
+            <FormItem>
+              <FormLabel className="font-semibold">Batch Details</FormLabel>
+
+              <FormControl>
+                <Input {...field} required className="bg-white" />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="teacher"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="font-semibold">Teacher Name</FormLabel>
+
               <FormControl>
                 <Input
-                  type="date"
+                  placeholder="Enter your teacher name"
                   {...field}
                   required
                   className="bg-white"
                 />
               </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="date"
+          render={({ field }) => (
+            <FormItem className="flex flex-col">
+              <FormLabel className="font-semibold">Select date</FormLabel>
+              <FormControl>
+                <DatePicker
+                className="w-[400px] rounded-lg h-9 border border-gray-800 shadow-sm p-2"
+                placeholderText="select date range"
+                  selectsRange={true}
+                  startDate={startDate}
+                  endDate={endDate}
+                  onChange={dateRangeHandler}
+                  dateFormat="dd mm yyyy"
+                />
+              </FormControl>
               <FormDescription>
-                Book an appointment for demo class
+                Book an appointment for demo class!
               </FormDescription>
               <FormMessage />
             </FormItem>

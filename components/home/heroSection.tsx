@@ -1,5 +1,5 @@
 "use client";
-import CardDemo from "@/demo/hero-section-demo/cardDemo";
+import CardDemo from "@/demo/home-demo/cardDemo";
 import React from "react";
 
 const HeroSection = () => {

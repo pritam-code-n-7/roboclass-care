@@ -1,4 +1,4 @@
-import HeroSection from "@/components/hero-section/heroSection";
+import HeroSection from "@/components/home/heroSection";
 import React from "react";
 
 function page() {

@@ -18,14 +18,16 @@ const appointmentSchema = new Schema(
       required: true,
       type: String,
     },
-    time:{
+    time: {
       required: true,
       type: String,
-    }
+    },
+  
   },
   {
     timestamps: true,
   }
 );
 
-export const Appointment = models.Appointment ?? model("Appointment", appointmentSchema);
+export const Appointment =
+  models.Appointment ?? model("Appointment", appointmentSchema);

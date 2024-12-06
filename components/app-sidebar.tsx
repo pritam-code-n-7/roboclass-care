@@ -55,7 +55,7 @@ const data = {
     },
     {
       title: "Admnin Dashboard",
-      url: "#",
+      url: "/adminDashboard",
       icon: LayoutDashboard,
       isActive: false,
       items: [
