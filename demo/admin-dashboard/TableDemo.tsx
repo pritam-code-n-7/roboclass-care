@@ -7,6 +7,7 @@ import {
     TableHeader,
     TableRow,
   } from "@/components/ui/table"
+import { EditButton } from "./EditButton"
   
   const appointments = [
     {
@@ -34,6 +35,7 @@ import {
             <TableHead>Teacher Name</TableHead>
             <TableHead>Date</TableHead>
             <TableHead className="text-right">Time</TableHead>
+            <TableHead className="text-right">Edit</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -43,6 +45,10 @@ import {
               <TableCell>{appointment.teacher}</TableCell>
               <TableCell>{appointment.date}</TableCell>
               <TableCell className="text-right">{appointment.time}</TableCell>
+              <TableCell className="text-right">
+                <EditButton name="Edit" type="button" />
+              </TableCell>
+
             </TableRow>
           ))}
         </TableBody>

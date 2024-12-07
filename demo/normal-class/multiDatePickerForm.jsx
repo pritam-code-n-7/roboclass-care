@@ -23,7 +23,16 @@ import { Checkbox } from "@/components/ui/checkbox";
 
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { SetStateAction, useState } from "react";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+// import { SetStateAction, useState } from "react";
 
 const items = [
   {
@@ -36,26 +45,85 @@ const items = [
   },
 ];
 
+const weekdays = [
+  {
+    id: "sun",
+    label: "Sunday",
+  },
+  {
+    id: "mon",
+    label: "Monday",
+  },
+  {
+    id: "tue",
+    label: "Tuesday",
+  },
+  {
+    id: "wed",
+    label: "Wednesday",
+  },
+  {
+    id: "thu",
+    label: "Thursday",
+  },
+  {
+    id: "fri",
+    label: "Friday",
+  },
+  {
+    id: "sat",
+    label: "Saturday",
+  },
+];
+
+const times = [
+  {
+    id: new Date().toLocaleTimeString().substring(11, 16),
+    label: "",
+  },
+  {
+    id: new Date().toLocaleTimeString().substring(11, 16),
+    label: "",
+  },
+  {
+    id: new Date().toLocaleTimeString().substring(11, 16),
+    label: "",
+  },
+  {
+    id: new Date().toLocaleTimeString().substring(11, 16),
+    label: "",
+  },
+  {
+    id: new Date().toLocaleTimeString().substring(11, 16),
+    label: "",
+  },
+  {
+    id: new Date().toLocaleTimeString().substring(11, 16),
+    label: "",
+  },
+  {
+    id: new Date().toLocaleTimeString().substring(11, 16),
+    label: "",
+  },
+];
+
 const FormSchema = z.object({
   date: z.array(z.string()).refine((value) => value.some((item) => item), {
     message: "You have to select at least one date.",
   }),
 
-  userName: z
-    .string()
-    .min(2, { message: "Name must contain atleast 2 character." }),
-
-  destination: z.string().min(12, { message: "mobile is incorrect." }),
-
-  course: z
-    .string()
-    .min(2, { message: "Course name must contain atleast 2 character." }),
-
-  time: z.string({ required_error: "Time slot is required." }),
+  time: z.array(z.string()).refine((value) => value.some((item) => item), {
+    message: "You have to select at least one time.",
+  }),
 
   items: z.array(z.string()).refine((value) => value.some((item) => item), {
     message: "You have to select at least one item.",
   }),
+
+  weekdays: z.array(z.string()).refine((value) => value.some((item) => item), {
+    message: "You have to select at least one day.",
+  }),
+
   teacher: z
     .string()
     .min(2, { message: "Teacher name must contain atleast 2 character." }),
@@ -69,28 +137,25 @@ export function MultiDatePickerForm() {
   const form = useForm({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      userName: "",
-      destination: "+971",
-      course: "",
       teacher: "",
       batch: "Prime B21",
       date: undefined,
-      time: new Date().toLocaleTimeString().substring(11, 16),
+      time: [new Date().toLocaleTimeString().substring(11, 16)],
       items: ["1hour"],
+      weekdays: ["mon"],
     },
   });
 
-  const [startDate, setStartDate] = useState();
-  const [endDate, setEndDate] = useState();
+  // const [startDate, setStartDate] = useState();
+  // const [endDate, setEndDate] = useState();
 
-  const dateRangeHandler = (value) => {
-    setStartDate(value[0]);
-    setEndDate(value[1]);
-  };
+  // const dateRangeHandler = (value) => {
+  //   setStartDate(value[0]);
+  //   setEndDate(value[1]);
+  // };
 
   async function onSubmit(data) {
     try {
-      //  const formattedDate = data.date.toISOString();
       await fetch("/api/scheduler", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -116,80 +181,49 @@ export function MultiDatePickerForm() {
         onSubmit={form.handleSubmit(onSubmit)}
         className="flex flex-col gap-4"
       >
-        <FormField
-          control={form.control}
-          name="userName"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="font-semibold">Name</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="Student/Parent name"
-                  {...field}
-                  required
-                  className="bg-white"
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="destination"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="font-semibold">Contact Number</FormLabel>
+        <Table>
+          <TableCaption>A list of weekdays with time slot</TableCaption>
+          <TableHeader>
+            <TableRow>
+              {weekdays.map((item) => (
+                <TableHead className="w-[100px]" key={item.id}>
+                  {item.label}
+                </TableHead>
+              ))}
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            <TableRow>
+              {times.map((item) => (
+                <TableCell className="font-medium" key={item.id}>
+                  <FormField
+                    control={form.control}
+                    name="time"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="font-semibold">
+                         {item.label}
+                        </FormLabel>
 
-              <FormControl>
-                <Input
-                  placeholder="Parent's Mobile/WhatsApp number"
-                  {...field}
-                  className="bg-white"
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        {/* <FormField
-          control={form.control}
-          name="destination"
-          render={({ field }) => (
-            <FormItem>
-               <FormLabel className="font-semibold">Phone</FormLabel>
-              <FormControl>
-                <PhoneInput
-                  country={"us"}
-                  placeholder="Parents Contact/Whatsapp number"
-                  {...field}               
-                  inputClass="phone-input" 
-                  specialLabel= ""
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        /> */}
-        <FormField
-          control={form.control}
-          name="course"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="font-semibold">Course Details</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="time"
+                            placeholder="e.g. - AI for kids"
+                            {...field}
+                            required
+                            className="bg-white"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </TableCell>
+              ))}
+            </TableRow>
+          </TableBody>
+        </Table>
 
-              <FormControl>
-                <Input
-                  placeholder="e.g. - AI for kids"
-                  {...field}
-                  required
-                  className="bg-white"
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
         <FormField
           control={form.control}
           name="batch"
@@ -223,32 +257,8 @@ export function MultiDatePickerForm() {
             </FormItem>
           )}
         />
-        <FormField
-          control={form.control}
-          name="date"
-          render={({ field }) => (
-            <FormItem className="flex flex-col">
-              <FormLabel className="font-semibold">Select date</FormLabel>
-              <FormControl>
-                <DatePicker
-                className="w-[400px] rounded-lg h-9 border border-gray-800 shadow-sm p-2"
-                placeholderText="select date range"
-                  selectsRange={true}
-                  startDate={startDate}
-                  endDate={endDate}
-                  onChange={dateRangeHandler}
-                  dateFormat="dd mm yyyy"
-                />
-              </FormControl>
-              <FormDescription>
-                Book an appointment for demo class!
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
 
-        <FormField
+        {/* <FormField
           control={form.control}
           name="time"
           render={({ field }) => (
@@ -267,7 +277,7 @@ export function MultiDatePickerForm() {
               <FormMessage />
             </FormItem>
           )}
-        />
+        /> */}
 
         <FormField
           control={form.control}

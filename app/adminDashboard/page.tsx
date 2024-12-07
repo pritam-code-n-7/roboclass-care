@@ -3,7 +3,7 @@ import React from "react";
 
 const page = () => {
   return (
-    <div className="w-screen grid grid-cols-1 space-y-5 p-20">
+    <div className="w-[1000px] grid grid-cols-1 space-y-5 p-20">
       <p className="font-bold text-4xl">Manage Appointments</p>
       <TableDemo />
     </div>
