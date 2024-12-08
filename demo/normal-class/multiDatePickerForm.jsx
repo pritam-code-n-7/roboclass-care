@@ -140,7 +140,7 @@ export function MultiDatePickerForm() {
       teacher: "",
       batch: "Prime B21",
       date: undefined,
-      time: [new Date().toLocaleTimeString().substring(11, 16)],
+      time: ['','','','','','','',],
       items: ["1hour"],
       weekdays: ["mon"],
     },
@@ -194,11 +194,11 @@ export function MultiDatePickerForm() {
           </TableHeader>
           <TableBody>
             <TableRow>
-              {times.map((item) => (
+              {times.map((item, index) => (
                 <TableCell className="font-medium" key={item.id}>
                   <FormField
                     control={form.control}
-                    name="time"
+                    name={`time.${index}`}
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="font-semibold">
@@ -210,7 +210,6 @@ export function MultiDatePickerForm() {
                             type="time"
                             placeholder="e.g. - AI for kids"
                             {...field}
-                            required
                             className="bg-white"
                           />
                         </FormControl>

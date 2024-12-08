@@ -12,23 +12,23 @@ import { EditButton } from "./EditButton"
   const appointments = [
     {
       student: "Ishanvi",
-      teacher: "Bishwajit",
-      date: "06-12-2024",
-      time: "17:05",
+      teacher: "Kritika",
+      date: "10-12-2024",
+      time: "12:30",
     },
     {
       student: "Pritam",
-      teacher: "Bishwajit",
-      date: "06-12-2024",
-      time: "18:00",
+      teacher: "Kritika",
+      date: "11-12-2024",
+      time: "11:00",
     },
     
   ]
   
-  export function TableDemo() {
+  export function TableDemoTwo() {
     return (
       <Table>
-        <TableCaption>A list of booked appointments</TableCaption>
+        <TableCaption>A list of booked appointments for Normal Class</TableCaption>
         <TableHeader>
           <TableRow>
             <TableHead className="w-[100px]">Student Name</TableHead>
